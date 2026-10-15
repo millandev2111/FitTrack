@@ -1,0 +1,310 @@
+@import "tailwindcss";
+
+/* El tema se resuelve antes del primer pintado (ver theme-script.ts):
+   <html data-theme="light|dark" data-accent="volt|fire|aqua"> */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  --bg: #f1f3fa;
+  --surface: #ffffff;
+  --surface-2: #e9ecf6;
+  --field: #f4f5fa;
+  --fg: #121430;
+  --sub: #666c8c;
+  --line: rgba(18, 20, 48, 0.08);
+  --nav-bg: rgba(255, 255, 255, 0.9);
+  --shadow: 0 6px 22px -10px rgba(18, 20, 48, 0.18);
+  --up: #0ea873;
+  --down: #e8344f;
+  --same: #d98a00;
+  --warm: #f2601f;
+  --gold: #e0a100;
+  --a1: #7c5cff;
+  --a2: #2e8bff;
+  --on-accent: #ffffff;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --bg: #090b14;
+  --surface: #131729;
+  --surface-2: #1c2136;
+  --field: #0e1121;
+  --fg: #f3f4fb;
+  --sub: #8a90ad;
+  --line: rgba(255, 255, 255, 0.07);
+  --nav-bg: rgba(20, 23, 40, 0.88);
+  --shadow: none;
+  --up: #2be0a0;
+  --down: #ff5370;
+  --same: #ffb547;
+  --warm: #ff7a3d;
+  --gold: #ffc53d;
+  color-scheme: dark;
+}
+
+[data-accent="fire"] {
+  --a1: #ff5a36;
+  --a2: #ff2d87;
+}
+[data-accent="aqua"] {
+  --a1: #00a6ec;
+  --a2: #00c48c;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-field: var(--field);
+  --color-fg: var(--fg);
+  --color-sub: var(--sub);
+  --color-line: var(--line);
+  --color-up: var(--up);
+  --color-down: var(--down);
+  --color-same: var(--same);
+  --color-warm: var(--warm);
+  --color-gold: var(--gold);
+  --color-a1: var(--a1);
+  --color-a2: var(--a2);
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* En @layer base para que las utilidades de Tailwind (text-*, bg-*) siempre ganen. */
+@layer base {
+  html {
+    background: var(--bg);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    min-height: 100dvh;
+    overscroll-behavior-y: none;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  /* Inputs numéricos sin flechas */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--a1);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    box-shadow: var(--shadow);
+  }
+  .grad {
+    background: linear-gradient(135deg, var(--a1), var(--a2));
+    color: var(--on-accent);
+  }
+  .grad-text {
+    background: linear-gradient(100deg, var(--a1), var(--a2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .grad-warm {
+    background: linear-gradient(135deg, var(--warm), #ff3d6e);
+    color: #fff;
+  }
+  .glow {
+    position: absolute;
+    left: -30%;
+    right: -30%;
+    top: -140px;
+    height: 400px;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--a1) 55%, transparent), transparent);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  [data-theme="light"] .glow {
+    opacity: 0.35;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 3.125rem;
+    padding: 0 1.25rem;
+    border-radius: 1.0625rem;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    transition: transform 0.12s ease, opacity 0.2s;
+    user-select: none;
+  }
+  .btn:active {
+    transform: scale(0.98);
+  }
+  .btn:disabled {
+    opacity: 0.55;
+  }
+  .btn-ghost {
+    background: var(--surface-2);
+    color: var(--fg);
+  }
+  .icon-btn {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex: none;
+    border-radius: 0.875rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    transition: transform 0.12s ease;
+  }
+  .icon-btn:active {
+    transform: scale(0.94);
+  }
+  .field {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    height: 3.125rem;
+    padding: 0 0.875rem;
+    border-radius: 1rem;
+    background: var(--field);
+    border: 1px solid var(--line);
+    color: var(--sub);
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .field:focus-within {
+    border-color: color-mix(in srgb, var(--a1) 70%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--a1) 14%, transparent);
+    color: var(--fg);
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    outline: none;
+    color: var(--fg);
+    font-size: 1rem;
+  }
+  .field input::placeholder,
+  .field textarea::placeholder {
+    color: var(--sub);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    height: 1.5rem;
+    padding: 0 0.55rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+    flex: none;
+  }
+  .chip-up {
+    color: var(--up);
+    background: color-mix(in srgb, var(--up) 15%, transparent);
+  }
+  .chip-down {
+    color: var(--down);
+    background: color-mix(in srgb, var(--down) 15%, transparent);
+  }
+  .chip-same {
+    color: var(--same);
+    background: color-mix(in srgb, var(--same) 16%, transparent);
+  }
+  .chip-accent {
+    color: var(--a1);
+    background: color-mix(in srgb, var(--a1) 14%, transparent);
+  }
+  .seg {
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 0.8rem;
+    background: var(--surface-2);
+  }
+  .seg > button {
+    flex: 1;
+    padding: 0.45rem 0.5rem;
+    border-radius: 0.6rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--sub);
+    transition: background 0.15s, color 0.15s;
+  }
+  .seg > button[aria-pressed="true"] {
+    background: var(--surface);
+    color: var(--fg);
+    box-shadow: var(--shadow);
+  }
+  .num {
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+  }
+  .glass {
+    background: var(--nav-bg);
+    border: 1px solid var(--line);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.35);
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.pop-in {
+  animation: pop-in 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* iPhone: iOS hace zoom al enfocar un campo con letra menor a 16 px. Fuera de capas
+   para ganarle a las utilidades de Tailwind; solo aplica en Safari de iOS. */
+@supports (-webkit-touch-callout: none) {
+  input,
+  select,
+  textarea {
+    font-size: max(16px, 1em);
+  }
+}
