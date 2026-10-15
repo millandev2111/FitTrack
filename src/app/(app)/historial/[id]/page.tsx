@@ -7,7 +7,7 @@ import { ExerciseThumb } from "@/components/exercise-photo";
 import { TrendChip } from "@/components/trend-chip";
 import { EQUIPMENT_LABEL, PR_LABEL } from "@/lib/labels";
 import { compareSessions, compareSet } from "@/lib/progress";
-import { requireUser } from "@/lib/supabase/server";
+import { getProfile, requireUser } from "@/lib/supabase/server";
 import { formatDay, formatMinutes, formatTime } from "@/lib/text";
 import type { Equipment, PrType, SetType, Unit } from "@/lib/types";
 import { formatNumber, formatVolume, formatWeight, toUnit } from "@/lib/units";
@@ -33,7 +33,7 @@ const TYPE_TAG: Partial<Record<SetType, string>> = { warmup: "C", drop: "D", fai
 
 export default async function WorkoutDetailPage({ params }: PageProps<"/historial/[id]">) {
   const { id } = await params;
-  const { supabase, userId } = await requireUser();
+  const { supabase } = await requireUser();
   const [{ data: w }, profileRes] = await Promise.all([
     supabase
       .from("workouts")
@@ -42,7 +42,7 @@ export default async function WorkoutDetailPage({ params }: PageProps<"/historia
       )
       .eq("id", id)
       .maybeSingle(),
-    supabase.from("profiles").select("unit_system, timezone").eq("id", userId).maybeSingle(),
+    getProfile().then((data) => ({ data })),
   ]);
   if (!w) notFound();
   const unit = (profileRes.data?.unit_system ?? "kg") as Unit;

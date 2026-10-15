@@ -2,7 +2,7 @@ import { ChevronRight, Clock, Dumbbell, Flame, Route, Trophy } from "lucide-reac
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SPORT_BY_KEY, type SportKey } from "@/lib/sports";
-import { requireUser } from "@/lib/supabase/server";
+import { getProfile, requireUser } from "@/lib/supabase/server";
 import { formatDay, formatMinutes } from "@/lib/text";
 import type { Unit } from "@/lib/types";
 import { formatNumber, formatVolume } from "@/lib/units";
@@ -28,7 +28,7 @@ function activityHighlight(a: ActivityRow) {
 }
 
 export default async function HistoryPage() {
-  const { supabase, userId } = await requireUser();
+  const { supabase } = await requireUser();
   const [{ data }, activitiesRes, profileRes] = await Promise.all([
     supabase
       .from("workouts")
@@ -37,7 +37,7 @@ export default async function HistoryPage() {
       .order("started_at", { ascending: false })
       .limit(60),
     supabase.from("activities").select("id, sport, started_at, duration_minutes, distance_km, calories, details").order("started_at", { ascending: false }).limit(60),
-    supabase.from("profiles").select("unit_system, timezone").eq("id", userId).maybeSingle(),
+    getProfile().then((data) => ({ data })),
   ]);
   const unit = (profileRes.data?.unit_system ?? "kg") as Unit;
   const tz = profileRes.data?.timezone ?? "America/Bogota";

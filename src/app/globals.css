@@ -276,6 +276,21 @@
   }
 }
 
+/* Respuesta inmediata al tocar tarjetas y filas (antes de que cargue la pantalla). */
+a.card,
+button.card,
+a.btn {
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+a.card:active,
+button.card:active {
+  transform: scale(0.985);
+  opacity: 0.85;
+}
+li > a:active {
+  opacity: 0.6;
+}
+
 @keyframes pop-in {
   from {
     opacity: 0;

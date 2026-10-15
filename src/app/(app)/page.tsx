@@ -4,9 +4,9 @@ import { PR_LABEL } from "@/lib/labels";
 import { monthLabel, shiftMonth } from "@/lib/month-summary";
 import { computeStreak, localDate } from "@/lib/progress";
 import { fetchRoutines } from "@/lib/routines";
-import { requireUser } from "@/lib/supabase/server";
+import { getProfile, requireUser } from "@/lib/supabase/server";
 import { relativeDay } from "@/lib/text";
-import type { PrType, Profile } from "@/lib/types";
+import type { PrType } from "@/lib/types";
 import { formatNumber, formatWeight } from "@/lib/units";
 import { InstallBanner } from "@/components/install-app";
 import { ActiveBanner, TodayCard } from "./home-client";
@@ -20,12 +20,8 @@ function greeting(hour: number) {
 }
 
 export default async function HomePage() {
-  const { supabase, userId } = await requireUser();
-  const { data: profileData } = await supabase.from("profiles").select("display_name, avatar_url, unit_system, weekly_goal, timezone").eq("id", userId).maybeSingle();
-  const profile = (profileData ?? { display_name: null, avatar_url: null, unit_system: "kg", weekly_goal: 4, timezone: "America/Bogota" }) as Pick<
-    Profile,
-    "display_name" | "avatar_url" | "unit_system" | "weekly_goal" | "timezone"
-  >;
+  const { supabase } = await requireUser();
+  const profile = await getProfile();
   const tz = profile.timezone;
   const now = new Date();
   const today = localDate(now, tz);

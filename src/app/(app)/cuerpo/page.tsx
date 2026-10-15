@@ -4,7 +4,7 @@ import { BackButton } from "@/components/back-button";
 import { LineChart } from "@/components/line-chart";
 import { MEASURES, type MetricRow } from "@/lib/body";
 import { localDate } from "@/lib/progress";
-import { requireUser } from "@/lib/supabase/server";
+import { getProfile, requireUser } from "@/lib/supabase/server";
 import { formatDay, formatShortDate } from "@/lib/text";
 import type { Unit } from "@/lib/types";
 import { formatNumber, toUnit } from "@/lib/units";
@@ -26,9 +26,9 @@ function Delta({ value, unit, invert = false }: { value: number | null; unit: st
 }
 
 export default async function BodyPage() {
-  const { supabase, userId } = await requireUser();
+  const { supabase } = await requireUser();
   const [{ data: profile }, { data }] = await Promise.all([
-    supabase.from("profiles").select("unit_system, timezone").eq("id", userId).maybeSingle(),
+    getProfile().then((data) => ({ data })),
     supabase.from("body_metrics").select("*").order("measured_on", { ascending: true }).limit(400),
   ]);
   const unit = (profile?.unit_system ?? "kg") as Unit;

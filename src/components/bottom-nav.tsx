@@ -32,6 +32,7 @@ export function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
+              prefetch
               aria-current={isActive(item.href) ? "page" : undefined}
               className={`flex w-14 flex-col items-center gap-0.5 text-[10px] font-semibold transition-colors ${
                 isActive(item.href) ? "text-fg" : "text-sub"
@@ -44,6 +45,7 @@ export function BottomNav() {
             <Link
               key="entrenar"
               href="/entrenar"
+              prefetch
               aria-label="Entrenar"
               className="grad -mt-8 grid size-14 place-items-center rounded-[20px] transition-transform active:scale-95"
               style={{ boxShadow: "0 12px 26px -8px color-mix(in srgb, var(--a1) 75%, transparent), 0 0 0 5px var(--bg)" }}

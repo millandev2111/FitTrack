@@ -5,7 +5,7 @@ import { ExerciseThumb } from "@/components/exercise-photo";
 import { TrendChip } from "@/components/trend-chip";
 import { MUSCLE_FAMILY, MUSCLE_LABEL } from "@/lib/labels";
 import { compareSessions, computeStreak, detectStagnation, localDate, longestStreak } from "@/lib/progress";
-import { requireUser } from "@/lib/supabase/server";
+import { getProfile, requireUser } from "@/lib/supabase/server";
 import { relativeDay } from "@/lib/text";
 import type { MuscleGroup, Unit } from "@/lib/types";
 import { latestWeight } from "@/lib/body";
@@ -21,8 +21,8 @@ type ExerciseInfo = { id: string; slug: string | null; name: string; primary_mus
 const DAY = 86_400_000;
 
 export default async function ProgressPage() {
-  const { supabase, userId } = await requireUser();
-  const { data: profile } = await supabase.from("profiles").select("unit_system, timezone").eq("id", userId).maybeSingle();
+  const { supabase } = await requireUser();
+  const profile = await getProfile();
   const unit = (profile?.unit_system ?? "kg") as Unit;
   const tz = profile?.timezone ?? "America/Bogota";
 

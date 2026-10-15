@@ -7,7 +7,7 @@ import { ExerciseMotion } from "@/components/exercise-photo";
 import { TrendChip } from "@/components/trend-chip";
 import { EQUIPMENT_LABEL, MUSCLE_LABEL, PR_LABEL } from "@/lib/labels";
 import { compareSessions, detectStagnation } from "@/lib/progress";
-import { requireUser } from "@/lib/supabase/server";
+import { getProfile, requireUser } from "@/lib/supabase/server";
 import { formatDay, relativeDay } from "@/lib/text";
 import type { Exercise, PrType, Unit } from "@/lib/types";
 import { formatNumber, formatVolume, formatWeight, toUnit } from "@/lib/units";
@@ -37,11 +37,11 @@ function setsSummary(sets: SetLite[], unit: Unit) {
 
 export default async function ExercisePage({ params }: PageProps<"/ejercicios/[id]">) {
   const { id } = await params;
-  const { supabase, userId } = await requireUser();
+  const { supabase } = await requireUser();
 
   const [exRes, profileRes, sessionsRes, setsRes, prsRes, bestRes] = await Promise.all([
     supabase.from("exercises").select("id, user_id, slug, name, primary_muscle, secondary_muscles, equipment, tracking, is_unilateral, default_rest_seconds, archived").eq("id", id).maybeSingle(),
-    supabase.from("profiles").select("unit_system, timezone").eq("id", userId).maybeSingle(),
+    getProfile().then((data) => ({ data })),
     supabase.from("exercise_sessions").select("workout_exercise_id, workout_id, started_at, work_sets, top_weight_kg, best_e1rm_kg, volume_kg").eq("exercise_id", id).gt("work_sets", 0).order("started_at", { ascending: true }).limit(200),
     supabase.from("sets").select("workout_exercise_id, position, set_type, weight_kg, reps, duration_seconds").eq("exercise_id", id).eq("completed", true).order("performed_at", { ascending: false }).limit(400),
     supabase.from("personal_records").select("id, type, value, previous_value, weight_kg, reps, achieved_at").eq("exercise_id", id).order("achieved_at", { ascending: false }).limit(6),

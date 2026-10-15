@@ -7,7 +7,7 @@ import { ExerciseThumb } from "@/components/exercise-photo";
 import { PR_LABEL } from "@/lib/labels";
 import { monthLabel, shiftMonth, summarizeMonth } from "@/lib/month-summary";
 import { localDate } from "@/lib/progress";
-import { requireUser } from "@/lib/supabase/server";
+import { getProfile, requireUser } from "@/lib/supabase/server";
 import type { Unit } from "@/lib/types";
 import { formatNumber, formatVolume, formatWeight } from "@/lib/units";
 
@@ -29,8 +29,8 @@ function Change({ now, before, suffix = "" }: { now: number; before: number; suf
 export default async function MonthSummaryPage({ params }: PageProps<"/resumen/[mes]">) {
   const { mes } = await params;
   if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(mes)) notFound();
-  const { supabase, userId } = await requireUser();
-  const { data: profile } = await supabase.from("profiles").select("unit_system, timezone").eq("id", userId).maybeSingle();
+  const { supabase } = await requireUser();
+  const profile = await getProfile();
   const unit = (profile?.unit_system ?? "kg") as Unit;
   const tz = profile?.timezone ?? "America/Bogota";
   const currentMonth = localDate(new Date(), tz).slice(0, 7);

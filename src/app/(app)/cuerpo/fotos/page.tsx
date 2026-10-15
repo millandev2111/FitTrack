@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import { BackButton } from "@/components/back-button";
 import { localDate } from "@/lib/progress";
-import { requireUser } from "@/lib/supabase/server";
+import { getProfile, requireUser } from "@/lib/supabase/server";
 import { BodyTabs } from "../body-tabs";
 import { PhotosClient, type Photo } from "./photos-client";
 
 export const metadata: Metadata = { title: "Fotos de progreso" };
 
 export default async function PhotosPage() {
-  const { supabase, userId } = await requireUser();
+  const { supabase } = await requireUser();
   const [{ data: profile }, { data }] = await Promise.all([
-    supabase.from("profiles").select("timezone").eq("id", userId).maybeSingle(),
+    getProfile().then((data) => ({ data })),
     supabase.from("progress_photos").select("id, taken_on, pose, storage_path").order("taken_on", { ascending: false }).limit(300),
   ]);
   const rows = (data ?? []) as Omit<Photo, "url">[];
