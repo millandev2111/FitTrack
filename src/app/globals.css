@@ -78,6 +78,14 @@
     -webkit-tap-highlight-color: transparent;
   }
 
+  /* Nada se puede arrastrar hacia los lados (p. ej. el brillo de fondo .glow, que
+     sobresale a propósito). `clip` no rompe los encabezados sticky, `hidden` sí. */
+  html,
+  body {
+    overflow-x: clip;
+    max-width: 100%;
+  }
+
   body {
     background: var(--bg);
     color: var(--fg);

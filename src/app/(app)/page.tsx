@@ -9,7 +9,7 @@ import { relativeDay } from "@/lib/text";
 import type { PrType } from "@/lib/types";
 import { formatNumber, formatWeight } from "@/lib/units";
 import { InstallBanner } from "@/components/install-app";
-import { ActiveBanner, TodayCard } from "./home-client";
+import { ActiveBanner, MyRoutines, TodayCard } from "./home-client";
 
 const WEEKDAYS = ["Lu", "Ma", "Mi", "Ju", "Vi", "Sá", "Do"];
 
@@ -140,6 +140,12 @@ export default async function HomePage() {
       <div className="relative">
         <TodayCard routine={nextRoutine} hasActive={Boolean(openRes.data)} />
       </div>
+
+      {routines.length > 0 && (
+        <div className="relative">
+          <MyRoutines routines={routines} hasActive={Boolean(openRes.data)} />
+        </div>
+      )}
 
       {Number(today.slice(8, 10)) <= 7 && (
         <Link href={`/resumen/${shiftMonth(today.slice(0, 7), -1)}`} className="card relative flex items-center gap-3 p-3.5">

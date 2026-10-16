@@ -14,7 +14,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
 
   return (
     <ProfileProvider profile={profile}>
-      <main className="mx-auto min-h-dvh w-full max-w-md px-4 pt-[calc(env(safe-area-inset-top)+14px)] pb-36">
+      <main className="mx-auto min-h-dvh w-full max-w-md overflow-x-clip px-4 pt-[calc(env(safe-area-inset-top)+14px)] pb-36">
         {children}
       </main>
       <div aria-hidden className="pointer-events-none fixed inset-x-0 top-0 z-50 bg-bg/90 backdrop-blur-md" style={{ height: "env(safe-area-inset-top)" }} />

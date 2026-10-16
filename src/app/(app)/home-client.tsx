@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, Dumbbell, ListChecks, LoaderCircle, Play, Timer } from "lucide-react";
+import { ChevronRight, Dumbbell, ListChecks, LoaderCircle, Play, Plus, Timer } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -66,5 +66,66 @@ export function TodayCard({ routine, hasActive }: { routine: RoutineWithItems | 
         {starting ? <LoaderCircle size={22} className="animate-spin" /> : <Play size={22} fill="currentColor" />}
       </button>
     </div>
+  );
+}
+
+/** Todas tus rutinas a mano: deslizas y empiezas la que quieras con un toque. */
+export function MyRoutines({ routines, hasActive }: { routines: RoutineWithItems[]; hasActive: boolean }) {
+  const router = useRouter();
+  const active = useActiveSession(null);
+  const [starting, setStarting] = useState<string | null>(null);
+
+  const start = async (routine: RoutineWithItems) => {
+    // Con una sesión abierta, Entrenar te pregunta si continuarla o descartarla.
+    if (hasActive || active) return router.push("/entrenar");
+    setStarting(routine.id);
+    const id = await startWorkout(routine);
+    openSession(router, id);
+  };
+
+  return (
+    <section className="flex flex-col gap-2.5" aria-label="Mis rutinas">
+      <div className="flex items-baseline justify-between">
+        <h2 className="font-display text-[15px] font-semibold">Mis rutinas</h2>
+        <Link href="/rutinas" className="text-xs text-sub">
+          Ver todas
+        </Link>
+      </div>
+      <div className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-2.5 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {routines.map((r) => (
+          <div key={r.id} className="card flex w-[min(68vw,240px)] flex-none snap-start flex-col gap-3 p-3.5">
+            <Link href={`/rutinas/${r.id}`} className="min-w-0" aria-label={`Editar ${r.name}`}>
+              <b className="block truncate font-display text-[16px] font-semibold">{r.name}</b>
+              <small className="block truncate text-xs text-sub">{r.items.length ? muscleSummary(r) : "Sin ejercicios todavía"}</small>
+            </Link>
+            <div className="mt-auto flex items-center justify-between gap-2">
+              <span className="inline-flex items-center gap-1 text-xs text-sub">
+                <ListChecks size={14} /> {r.items.length} ejercicios
+              </span>
+              {r.items.length === 0 ? (
+                <Link href={`/rutinas/${r.id}`} className="rounded-xl bg-a1/14 px-2.5 py-1.5 text-xs font-semibold text-a1">
+                  Añadir
+                </Link>
+              ) : (
+                <button
+                  onClick={() => start(r)}
+                  disabled={starting != null}
+                  className="grad grid size-10 place-items-center rounded-[13px] transition-transform active:scale-95 disabled:opacity-60"
+                  aria-label={`Empezar ${r.name}`}
+                >
+                  {starting === r.id ? <LoaderCircle size={18} className="animate-spin" /> : <Play size={18} fill="currentColor" />}
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+        <Link
+          href="/rutinas/nueva"
+          className="flex w-28 flex-none snap-start flex-col items-center justify-center gap-1.5 rounded-[22px] border-[1.5px] border-dashed border-a1/40 text-[13px] font-semibold text-a1"
+        >
+          <Plus size={20} /> Nueva
+        </Link>
+      </div>
+    </section>
   );
 }
